@@ -18,6 +18,9 @@ module "eks" {
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
       asg_desired_capacity          = 2
+      labels                        = {
+        nodename = "prometheus-node"
+      }
     },
     {
       name                          = "worker-group-2"
@@ -27,6 +30,23 @@ module "eks" {
       asg_desired_capacity          = 1
     },
   ]
+
+  # Fargate
+  fargate_profiles = {
+    default = {
+      name = "default"
+      selectors = [
+        {
+          namespace = "default"
+        }
+      ]
+
+      timeouts = {
+        create = "20m"
+        delete = "20m"
+      }
+    }
+  }
 }
 
 data "aws_eks_cluster" "cluster" {
@@ -39,4 +59,8 @@ data "aws_eks_cluster_auth" "cluster" {
 
 data "aws_iam_role" "workers" {
   name = module.eks.worker_iam_role_name
+}
+
+data "aws_iam_role" "fargate" {
+  name = module.eks.fargate_iam_role_name
 }

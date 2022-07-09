@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "github_assume_role_policy" {
     condition {
       test     = "StringLike"
       variable = "${replace(aws_iam_openid_connect_provider.github.url, "https://", "")}:sub"
-      values   = ["repo:prashanth-volvocars/actions-to-eks:*"]
+      values   = ["repo:prashanth-volvocars/*"]
     }
 
     principals {
